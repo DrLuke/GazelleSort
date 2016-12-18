@@ -118,7 +118,7 @@ class GazelleSort:
         logout = self.config["url"] + "/logout.php"
         self.session.get(logout + "?auth=%s" % self.authkey)
 
-    @rate_limited(10.5)
+    @rate_limited(0.5)
     def ajaxrequest(self, action, **kwargs):
         """API Request"""
         ajax = self.config["url"] + "/ajax.php"
@@ -141,7 +141,7 @@ class GazelleSort:
         except json.JSONDecodeError:
             raise GazelleSort.RequestException("Request didn't return any JSON. HTTP status code: %s" % response.status_code)
 
-    @rate_limited(10.5)
+    @rate_limited(0.5)
     def getSnatched(self):
         """Find all torrents user has snatched"""
         torrents = self.config["url"] + "/torrents.php"
@@ -150,7 +150,7 @@ class GazelleSort:
         pages = math.ceil(profile["response"]["community"]["seeding"] / 50)
         print("Reading IDs of %s snatched torrents" % profile["response"]["community"]["seeding"])
 
-        @rate_limited(5)
+        @rate_limited(1)
         def readPage(page):
             r = self.session.get(torrents + "?type=seeding&page=%s&userid=%s" % (page + 1, self.userid))
             matches = re.findall("torrents.php\?id=(?P<groupid>\d+)&amp;torrentid=(?P<torrentid>\d+)", bytes.decode(r.content))
